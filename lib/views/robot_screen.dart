@@ -34,56 +34,79 @@ class _RobotScreenState extends State<RobotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff121212), // Simula a tela desligada/Hardware
+      backgroundColor: const Color(
+        0xff121212,
+      ), // Simula a tela desligada/Hardware
       appBar: AppBar(
-        title: const Text('ESP32-S3 AI Robot Face', style: TextStyle(color: Colors.white70)),
+        title: const Text(
+          'ESP32-S3 AI Robot Face',
+          style: TextStyle(color: Colors.white70),
+        ),
         backgroundColor: Colors.black,
         elevation: 0,
         centerTitle: true,
       ),
       body: SafeArea(
+        // 🔥 resizeToAvoidBottomInset: true (Já é o padrão do Scaffold, garante que ele mude de tamanho com o teclado)
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(height: 20),
-            
-            // Área do Display do Hardware (Expressão dos Olhos)
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              height: 220,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.grey.shade900, width: 3),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.cyan.withValues(alpha: 0.05),
-                    blurRadius: 15,
-                    spreadRadius: 5,
-                  )
-                ]
-              ),
-              child: Center(
-                child: RobotEyes(emotion: _viewModel.currentEmotion),
-              ),
-            ),
+            // 1. Tornamos a parte de cima flexível e rolável
+            Expanded(
+              child: SingleChildScrollView(
+                physics:
+                    const ClampingScrollPhysics(), // Evita o efeito de elástico feio em telas espremidas
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
 
-            // Balão de resposta do console da IA
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                _viewModel.lastResponse,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: 'monospace', // Estilo terminal/hardware
+                    // Área do Display do Hardware (Expressão dos Olhos)
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 24),
+                      height: 220,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: Colors.grey.shade900,
+                          width: 3,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.cyan.withValues(alpha: 0.05),
+                            blurRadius: 15,
+                            spreadRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: RobotEyes(emotion: _viewModel.currentEmotion),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Balão de resposta do console da IA
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Text(
+                        _viewModel.lastResponse,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'monospace',
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20), // Margem de respiro inferior
+                  ],
                 ),
               ),
             ),
 
-            // Input / Painel de Controle de Envio de Voz/Texto
+            // 2. O painel de controle/input fica fixo na parte inferior, subindo junto com o teclado
             Container(
               padding: const EdgeInsets.all(24),
               decoration: const BoxDecoration(
@@ -119,9 +142,13 @@ class _RobotScreenState extends State<RobotScreen> {
                     },
                     child: CircleAvatar(
                       radius: 28,
-                      backgroundColor: _viewModel.isLoading ? Colors.grey : Colors.cyanAccent,
+                      backgroundColor: _viewModel.isLoading
+                          ? Colors.grey
+                          : Colors.cyanAccent,
                       child: Icon(
-                        _viewModel.isLoading ? Icons.hourglass_bottom : Icons.mic,
+                        _viewModel.isLoading
+                            ? Icons.hourglass_bottom
+                            : Icons.mic,
                         color: Colors.black,
                       ),
                     ),
