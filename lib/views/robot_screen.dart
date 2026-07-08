@@ -18,6 +18,8 @@ class _RobotScreenState extends State<RobotScreen> {
     super.initState();
     // Escuta as mudanças vindo da ViewModel (Reatividade NanoMVVM)
     _viewModel.addListener(_onViewModelChanged);
+    // Inicializa os motores de voz do dispositivo
+    _viewModel.initRobot();
   }
 
   void _onViewModelChanged() {
@@ -47,7 +49,7 @@ class _RobotScreenState extends State<RobotScreen> {
         centerTitle: true,
       ),
       body: SafeArea(
-        // 🔥 resizeToAvoidBottomInset: true (Já é o padrão do Scaffold, garante que ele mude de tamanho com o teclado)
+        // ResizeToAvoidBottomInset: true (Já é o padrão do Scaffold, garante que ele mude de tamanho com o teclado)
         child: Column(
           children: [
             // 1. Tornamos a parte de cima flexível e rolável
@@ -136,19 +138,34 @@ class _RobotScreenState extends State<RobotScreen> {
                   ),
                   const SizedBox(width: 16),
                   GestureDetector(
-                    onTap: () {
-                      _viewModel.processVoiceInput(_inputController.text);
-                      _inputController.clear();
+                    onTapDown: (_) {
+                      // Se o campo de texto estiver vazio, grava voz. Se tiver texto, envia o texto.
+                      if (_inputController.text.isEmpty) {
+                        _viewModel.startVoiceCapture();
+                      }
+                    },
+                    onTapUp: (_) {
+                      if (_inputController.text.isNotEmpty) {
+                        _viewModel.processRobotResponse(_inputController.text);
+                        _inputController.clear();
+                      } else {
+                        _viewModel.stopVoiceCapture();
+                      }
                     },
                     child: CircleAvatar(
                       radius: 28,
-                      backgroundColor: _viewModel.isLoading
-                          ? Colors.grey
-                          : Colors.cyanAccent,
+                      backgroundColor: _viewModel.isListening
+                          ? Colors
+                                .redAccent // Fica vermelho gravando
+                          : (_viewModel.isLoading
+                                ? Colors.grey
+                                : Colors.cyanAccent),
                       child: Icon(
-                        _viewModel.isLoading
-                            ? Icons.hourglass_bottom
-                            : Icons.mic,
+                        _viewModel.isListening
+                            ? Icons.record_voice_over
+                            : (_viewModel.isLoading
+                                  ? Icons.hourglass_bottom
+                                  : Icons.mic),
                         color: Colors.black,
                       ),
                     ),
