@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/models/robot_emotion.dart';
-import '../data/services/ia_service.dart'; // O seu service que bate na Groq
+import '../data/services/ia_service.dart';
 import '../data/services/voice_service.dart';
 
 class RobotViewModel extends ChangeNotifier {
@@ -59,7 +59,7 @@ class RobotViewModel extends ChangeNotifier {
     _updateEmotion(RobotEmotion.thinking);
 
     try {
-      // 1. Busca a resposta de texto na Groq
+      // 1. Busca a resposta de texto no serviço de IA
       final response = await _apiService.sendMessage(userText);
       _lastResponse = response;
 

@@ -5,13 +5,15 @@ class VoiceService {
   final SpeechToText _speechToText = SpeechToText();
   final FlutterTts _flutterTts = FlutterTts();
 
+  bool get isListening => _speechToText.isListening;
+
   // Inicializa os motores de áudio do sistema operacional
   Future<bool> initVoice() async {
     bool speechAvailable = await _speechToText.initialize();
 
     // Configurações do Sintetizador de Voz (Robô falando)
     await _flutterTts.setLanguage('pt-BR');
-    await _flutterTts.setSpeechRate(0.65); // Velocidade da fala
+    await _flutterTts.setSpeechRate(0.50); // Velocidade da fala
     await _flutterTts.setVolume(1.0); // Volume da fala
     await _flutterTts.setPitch(0.85); // Tom da fala
 
@@ -53,7 +55,5 @@ class VoiceService {
   // Interrompe a fala do robô caso o usuário queira interrompê-lo
   Future<void> stopSpeaking() async {
     await _flutterTts.stop();
-  }
-
-  bool get isListening => _speechToText.isListening;
+  }  
 }

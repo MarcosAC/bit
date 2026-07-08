@@ -16,7 +16,7 @@ class _RobotScreenState extends State<RobotScreen> {
   @override
   void initState() {
     super.initState();
-    // Escuta as mudanças vindo da ViewModel (Reatividade NanoMVVM)
+    // Escuta as mudanças vindo da ViewModel
     _viewModel.addListener(_onViewModelChanged);
     // Inicializa os motores de voz do dispositivo
     _viewModel.initRobot();
@@ -41,18 +41,16 @@ class _RobotScreenState extends State<RobotScreen> {
       ), // Simula a tela desligada/Hardware
       appBar: AppBar(
         title: const Text(
-          'ESP32-S3 AI Robot Face',
+          'Bit AI Robot Face',
           style: TextStyle(color: Colors.white70),
         ),
         backgroundColor: Colors.black,
         elevation: 0,
         centerTitle: true,
       ),
-      body: SafeArea(
-        // ResizeToAvoidBottomInset: true (Já é o padrão do Scaffold, garante que ele mude de tamanho com o teclado)
+      body: SafeArea(        
         child: Column(
-          children: [
-            // 1. Tornamos a parte de cima flexível e rolável
+          children: [            
             Expanded(
               child: SingleChildScrollView(
                 physics:
@@ -102,13 +100,13 @@ class _RobotScreenState extends State<RobotScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 20), // Margem de respiro inferior
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
 
-            // 2. O painel de controle/input fica fixo na parte inferior, subindo junto com o teclado
+            // Área de Input do Usuário (Botão de Microfone + Campo de Texto)
             Container(
               padding: const EdgeInsets.all(24),
               decoration: const BoxDecoration(

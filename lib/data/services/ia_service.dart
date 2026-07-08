@@ -55,7 +55,7 @@ class IAService {
 
         String textResponse = content['parts'][0]['text'].toString().trim();
 
-        // Limpeza profunda contra qualquer lixo de formatação da web para não quebrar o seu flutter_tts
+        // Limpeza profunda contra qualquer lixo de formatação da web para não quebrar o flutter_tts
         textResponse = textResponse.replaceAll(RegExp(r'\[\d+\]|\[source\]'), ''); 
         textResponse = textResponse.replaceAll('*', ''); 
         textResponse = textResponse.replaceAll(RegExp(r'https?:\/\/\S+'), ''); 
