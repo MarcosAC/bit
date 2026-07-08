@@ -16,8 +16,10 @@ class _RobotScreenState extends State<RobotScreen> {
   @override
   void initState() {
     super.initState();
-    // Escuta as mudanças vindo da ViewModel (Reatividade NanoMVVM)
+    // Escuta as mudanças vindo da ViewModel
     _viewModel.addListener(_onViewModelChanged);
+    // Inicializa os motores de voz do dispositivo
+    _viewModel.initRobot();
   }
 
   void _onViewModelChanged() {
@@ -39,18 +41,16 @@ class _RobotScreenState extends State<RobotScreen> {
       ), // Simula a tela desligada/Hardware
       appBar: AppBar(
         title: const Text(
-          'ESP32-S3 AI Robot Face',
+          'Bit AI Robot Face',
           style: TextStyle(color: Colors.white70),
         ),
         backgroundColor: Colors.black,
         elevation: 0,
         centerTitle: true,
       ),
-      body: SafeArea(
-        // 🔥 resizeToAvoidBottomInset: true (Já é o padrão do Scaffold, garante que ele mude de tamanho com o teclado)
+      body: SafeArea(        
         child: Column(
-          children: [
-            // 1. Tornamos a parte de cima flexível e rolável
+          children: [            
             Expanded(
               child: SingleChildScrollView(
                 physics:
@@ -100,13 +100,13 @@ class _RobotScreenState extends State<RobotScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 20), // Margem de respiro inferior
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
 
-            // 2. O painel de controle/input fica fixo na parte inferior, subindo junto com o teclado
+            // Área de Input do Usuário (Botão de Microfone + Campo de Texto)
             Container(
               padding: const EdgeInsets.all(24),
               decoration: const BoxDecoration(
@@ -136,19 +136,34 @@ class _RobotScreenState extends State<RobotScreen> {
                   ),
                   const SizedBox(width: 16),
                   GestureDetector(
-                    onTap: () {
-                      _viewModel.processVoiceInput(_inputController.text);
-                      _inputController.clear();
+                    onTapDown: (_) {
+                      // Se o campo de texto estiver vazio, grava voz. Se tiver texto, envia o texto.
+                      if (_inputController.text.isEmpty) {
+                        _viewModel.startVoiceCapture();
+                      }
+                    },
+                    onTapUp: (_) {
+                      if (_inputController.text.isNotEmpty) {
+                        _viewModel.processRobotResponse(_inputController.text);
+                        _inputController.clear();
+                      } else {
+                        _viewModel.stopVoiceCapture();
+                      }
                     },
                     child: CircleAvatar(
                       radius: 28,
-                      backgroundColor: _viewModel.isLoading
-                          ? Colors.grey
-                          : Colors.cyanAccent,
+                      backgroundColor: _viewModel.isListening
+                          ? Colors
+                                .redAccent // Fica vermelho gravando
+                          : (_viewModel.isLoading
+                                ? Colors.grey
+                                : Colors.cyanAccent),
                       child: Icon(
-                        _viewModel.isLoading
-                            ? Icons.hourglass_bottom
-                            : Icons.mic,
+                        _viewModel.isListening
+                            ? Icons.record_voice_over
+                            : (_viewModel.isLoading
+                                  ? Icons.hourglass_bottom
+                                  : Icons.mic),
                         color: Colors.black,
                       ),
                     ),
